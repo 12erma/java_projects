@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter the city" spellcheck="false">
+            <button type="button">
+                <img src="images/search.png" alt="Search">
+            </button>
+        </div>
+        <div class="weather">
+            <img src="images/rain.png" class="weather-icon" alt="Weather Icon">
+            <h1 class="temp">22°C</h1>
+            <h2 class="city">New Delhi</h2>
+            <div class="details">
+                <div class="col">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                    <img src="images/humidity.png" alt="Humidity Icon">
+                </div>
+                <div class="col">
+                    <div>
+                        <p class="wind">15 km/h</p>
+                        <p>Wind Speed</p>
+                    </div>
+                    <img src="images/wind.png" alt="Wind Icon">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const apikey = "c8023702449b9d7f8cd0979e994ec4cf";
+        const apiurl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+        const searchBox = document.querySelector(".search input");
+        const searchBtn = document.querySelector(".search button");
+
+        async function check(city) {
+            try {
+                const res = await fetch(`${apiurl}${city}&appid=${apikey}`);
+                if (!res.ok) {
+                    throw new Error("City not found");
+                }
+                const data = await res.json();
+                console.log(data);
+
+                // Update the UI
+                document.querySelector(".city").innerHTML = data.name;
+                document.querySelector(".temp").innerHTML = data.main.temp + "°C";
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+                // Update the weather icon
+                const iconCode = data.weather[0].icon;
+                document.querySelector(".weather-icon").src = `http://openweathermap.org/img/wn/${iconCode}.png`;
+            } catch (error) {
+                console.error(error.message);
+                alert("City not found. Please try again!");
+            }
+        }
+
+        searchBtn.addEventListener("click", () => {
+            const city = searchBox.value.trim();
+            if (city) {
+                check(city);
+            } else {
+                alert("Please enter a city name.");
+            }
+        });
+    </script>
+</body>
+</html>
